@@ -14,7 +14,7 @@ export function ProductPage({ product }: { product: Product }) {
             <a className="pdp-back" href="#/">← Back to the collection</a>
             <div className="pdp-grid">
                 <div className="pdp-gallery">
-                    <Photo key={`${product.id}-${photo}`} ph={product.photos[photo]} mode="contain" className="pdp-photo" />
+                    <Photo key={`${product.id}-${photo}`} ph={product.photos[photo]} mode="contain" className="pdp-photo" full />
                     {multi && (
                         <div className="pdp-thumbs">
                             {product.photos.map((ph, i) => (

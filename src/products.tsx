@@ -1,13 +1,48 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-/** Retries a failed image a few times instead of leaving a permanent grey tile on flaky connections. */
-function useRetry(): [number, () => void] {
+/**
+ * Image recovery for flaky mobile connections and dropped decodes.
+ * - onError retries with a short delay (network failures),
+ * - a watchdog retries requests that hang without ever erroring,
+ * - when a visible image has loaded but its decode was dropped (mobile memory
+ *   pressure leaves a grey tile with no error event), decode() re-runs the
+ *   decode and a rejection forces a real reload with a fresh URL.
+ */
+function useImgRecovery(imgRef: React.RefObject<HTMLImageElement | null>): [number, () => void] {
     const [attempt, setAttempt] = useState(0);
-    return [attempt, () => {
-        if (attempt < 4) setTimeout(() => setAttempt((a) => a + 1), 800 * (attempt + 1));
-    }];
+    const retry = useCallback(() => setAttempt((a) => (a < 8 ? a + 1 : a)), []);
+    const onError = useCallback(() => {
+        window.setTimeout(retry, 700);
+    }, [retry]);
+    useEffect(() => {
+        const img = imgRef.current;
+        if (!img) return;
+        let cancelled = false;
+        const timers: number[] = [];
+        const later = (fn: () => void, ms: number) => { timers.push(window.setTimeout(() => { if (!cancelled) fn(); }, ms)); };
+        const check = (el: HTMLImageElement) => {
+            if (!el.complete) { later(() => check(el), 8000); return; }
+            if (el.naturalWidth === 0) { retry(); return; }
+            if (el.decode) el.decode().catch(() => retry());
+        };
+        later(() => { if (!img.complete) retry(); }, 12000);
+        let io: IntersectionObserver | null = null;
+        if ('IntersectionObserver' in window) {
+            io = new IntersectionObserver((entries) => {
+                for (const en of entries) if (en.isIntersecting && !cancelled) check(en.target as HTMLImageElement);
+            });
+            io.observe(img);
+        }
+        return () => { cancelled = true; timers.forEach((t) => clearTimeout(t)); io?.disconnect(); };
+    }, [attempt, retry]);
+    return [attempt, onError];
 }
-const SHEETS: string[] = Array.from({ length: 746 }, (_, i) => `sheets/sheet-${String(i).padStart(4, '0')}.webp`);
+
+const SHEET_COUNT = 746;
+/** Full-resolution sprite sheets (1920px wide), used for the main product-page photo. */
+const SHEETS: string[] = Array.from({ length: SHEET_COUNT }, (_, i) => `sheets/sheet-${String(i).padStart(4, '0')}.webp`);
+/** Half-resolution copies (960px wide): grids and thumbnails decode with 4x less memory on phones. */
+const SHEETS_SM: string[] = Array.from({ length: SHEET_COUNT }, (_, i) => `sheets-sm/sheet-${String(i).padStart(4, '0')}.webp`);
 
 
 
@@ -18,31 +53,36 @@ const SHEETS: string[] = Array.from({ length: 746 }, (_, i) => `sheets/sheet-${S
 
 
 export interface Sprite { s: number; x: number; y: number; w: number; h: number; alt: string; src?: string }
-export function Photo({ ph, mode, className, lazy }: { ph: Sprite; mode: 'cover' | 'contain'; className?: string; lazy?: boolean }) {
-    const [attempt, onError] = useRetry();
+export function Photo({ ph, mode, className, lazy, full }: { ph: Sprite; mode: 'cover' | 'contain'; className?: string; lazy?: boolean; full?: boolean }) {
+    const imgRef = useRef<HTMLImageElement | null>(null);
+    const [attempt, onError] = useImgRecovery(imgRef);
     if (ph.src) {
         return (
             <div key={ph.src} className={`sprite${className ? ' ' + className : ''}`} style={{ aspectRatio: mode === 'cover' ? '1 / 1' : `${ph.w} / ${ph.h}`, background: '#f1efec' }}>
-                <img key={`${ph.src}-${attempt}`} src={attempt ? `${ph.src}?r=${attempt}` : ph.src} onError={onError} alt={ph.alt} loading={lazy ? 'lazy' : undefined} decoding="async" style={{ position: 'static', width: '100%', height: '100%', objectFit: mode === 'cover' ? 'cover' : 'contain' }} />
+                <img ref={imgRef} key={`${ph.src}-${attempt}`} src={attempt ? `${ph.src}?r=${attempt}` : ph.src} onError={onError} alt={ph.alt} loading={lazy ? 'lazy' : undefined} decoding="async" style={{ position: 'static', width: '100%', height: '100%', objectFit: mode === 'cover' ? 'cover' : 'contain' }} />
             </div>
         );
     }
+    const base = full ? SHEETS : SHEETS_SM;
+    const sheetW = full ? 1920 : 960;
+    const sc = full ? 1 : 0.5;
+    const sx = ph.x * sc, sy = ph.y * sc, sw = ph.w * sc, sh = ph.h * sc;
     let ratio: string, imgW: string, left: number, top: number;
     if (mode === 'cover') {
-        const k = Math.max(1 / ph.w, 1 / ph.h);
+        const k = Math.max(1 / sw, 1 / sh);
         ratio = '1 / 1';
-        imgW = `${1920 * k * 100}%`;
-        left = (0.5 - (ph.x + ph.w / 2) * k) * 100;
-        top = (0.5 - (ph.y + ph.h / 2) * k) * 100;
+        imgW = `${sheetW * k * 100}%`;
+        left = (0.5 - (sx + sw / 2) * k) * 100;
+        top = (0.5 - (sy + sh / 2) * k) * 100;
     } else {
-        ratio = `${ph.w} / ${ph.h}`;
-        imgW = `${192000 / ph.w}%`;
-        left = -(ph.x / ph.w) * 100;
-        top = -(ph.y / ph.h) * 100;
+        ratio = `${sw} / ${sh}`;
+        imgW = `${sheetW * 100 / sw}%`;
+        left = -(sx / sw) * 100;
+        top = -(sy / sh) * 100;
     }
     return (
         <div className={`sprite${className ? ' ' + className : ''}`} style={{ aspectRatio: ratio }}>
-            <img key={`${ph.s}-${ph.x}-${ph.y}-${attempt}`} src={attempt ? `${SHEETS[ph.s]}?r=${attempt}` : SHEETS[ph.s]} onError={onError} alt={ph.alt} loading={lazy ? 'lazy' : undefined} decoding="async" style={{ width: imgW, maxWidth: 'none', maxHeight: 'none', left: `${left}%`, top: `${top}%` }} />
+            <img ref={imgRef} key={`${ph.s}-${ph.x}-${ph.y}-${attempt}`} src={attempt ? `${base[ph.s]}?r=${attempt}` : base[ph.s]} onError={onError} alt={ph.alt} loading={lazy ? 'lazy' : undefined} decoding="async" style={{ width: imgW, maxWidth: 'none', maxHeight: 'none', left: `${left}%`, top: `${top}%` }} />
         </div>
     );
 }
