@@ -34,7 +34,7 @@ export function App() {
     const scrollY = useRef(0);
     useEffect(() => {
         const fromHash = () => {
-            const m = window.location.hash.match(/#\/?p=(bi|wm)(\d+)/);
+            const m = window.location.hash.match(/#\/?p=(bi|wm)(\d+)/) || window.location.pathname.match(/^\/p\/(bi|wm)(\d+)\/?$/);
             if (!m) {
                 setOpen(null);
                 requestAnimationFrame(() => window.scrollTo(0, scrollY.current));

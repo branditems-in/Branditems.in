@@ -1,4 +1,12 @@
-import type React from 'react';
+import React, { useState } from 'react';
+
+/** Retries a failed image a few times instead of leaving a permanent grey tile on flaky connections. */
+function useRetry(): [number, () => void] {
+    const [attempt, setAttempt] = useState(0);
+    return [attempt, () => {
+        if (attempt < 4) setTimeout(() => setAttempt((a) => a + 1), 800 * (attempt + 1));
+    }];
+}
 const SHEETS: string[] = Array.from({ length: 746 }, (_, i) => `sheets/sheet-${String(i).padStart(4, '0')}.webp`);
 
 
@@ -11,10 +19,11 @@ const SHEETS: string[] = Array.from({ length: 746 }, (_, i) => `sheets/sheet-${S
 
 export interface Sprite { s: number; x: number; y: number; w: number; h: number; alt: string; src?: string }
 export function Photo({ ph, mode, className, lazy }: { ph: Sprite; mode: 'cover' | 'contain'; className?: string; lazy?: boolean }) {
+    const [attempt, onError] = useRetry();
     if (ph.src) {
         return (
             <div key={ph.src} className={`sprite${className ? ' ' + className : ''}`} style={{ aspectRatio: mode === 'cover' ? '1 / 1' : `${ph.w} / ${ph.h}`, background: '#f1efec' }}>
-                <img key={ph.src} src={ph.src} alt={ph.alt} loading={lazy ? 'lazy' : undefined} decoding="async" style={{ position: 'static', width: '100%', height: '100%', objectFit: mode === 'cover' ? 'cover' : 'contain' }} />
+                <img key={`${ph.src}-${attempt}`} src={attempt ? `${ph.src}?r=${attempt}` : ph.src} onError={onError} alt={ph.alt} loading={lazy ? 'lazy' : undefined} decoding="async" style={{ position: 'static', width: '100%', height: '100%', objectFit: mode === 'cover' ? 'cover' : 'contain' }} />
             </div>
         );
     }
@@ -33,7 +42,7 @@ export function Photo({ ph, mode, className, lazy }: { ph: Sprite; mode: 'cover'
     }
     return (
         <div className={`sprite${className ? ' ' + className : ''}`} style={{ aspectRatio: ratio }}>
-            <img key={`${ph.s}-${ph.x}-${ph.y}`} src={SHEETS[ph.s]} alt={ph.alt} loading={lazy ? 'lazy' : undefined} decoding="async" style={{ width: imgW, maxWidth: 'none', maxHeight: 'none', left: `${left}%`, top: `${top}%` }} />
+            <img key={`${ph.s}-${ph.x}-${ph.y}-${attempt}`} src={attempt ? `${SHEETS[ph.s]}?r=${attempt}` : SHEETS[ph.s]} onError={onError} alt={ph.alt} loading={lazy ? 'lazy' : undefined} decoding="async" style={{ width: imgW, maxWidth: 'none', maxHeight: 'none', left: `${left}%`, top: `${top}%` }} />
         </div>
     );
 }
@@ -2015,6 +2024,6 @@ export const productAnchor = (product: Product): string => (product.source === '
 export const waEnquiry = (product: Product): string => {
     const msg = `${product.name}
 Price: ${product.price}
-${SITE_URL}#/p=${productAnchor(product)}`;
+${SITE_URL}/p/${productAnchor(product)}`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${waEncode(msg)}`;
 };
