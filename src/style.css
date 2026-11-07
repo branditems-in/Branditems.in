@@ -106,3 +106,17 @@ body { background: var(--shop-page); }
 .pdp-thumb-sprite { height: 100%; }
 .pdp-body { min-width: 0; padding-top: 4px; }
 a.card { text-decoration: none; color: inherit; }
+
+.card-media { position: relative; }
+.card-swipe { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-y; border-radius: 3px 3px 0 0; }
+.card-swipe::-webkit-scrollbar { display: none; }
+.card-slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; }
+.card-slide .card-photo { border-radius: 0; }
+.card-nav { position: absolute; top: 0; bottom: 0; width: 44px; border: 0; background: transparent; color: var(--shop-ink); font-size: 30px; line-height: 1; cursor: pointer; opacity: 0; transition: opacity .15s; display: flex; align-items: center; justify-content: center; text-shadow: 0 1px 3px rgba(255,255,255,.9); }
+.card-prev { left: 0; }
+.card-next { right: 0; }
+.card:hover .card-nav, .card-nav:focus-visible { opacity: .85; }
+.card-dots { position: absolute; left: 0; right: 0; bottom: 8px; display: flex; gap: 5px; justify-content: center; pointer-events: none; }
+.card-dots span { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.65); box-shadow: 0 0 2px rgba(0,0,0,.35); }
+.card-dots span.on { background: var(--shop-ink); }
+@media (hover: none) { .card-nav { display: none; } }

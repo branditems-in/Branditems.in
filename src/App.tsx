@@ -11,9 +11,38 @@ function WhatsAppIcon() {
 }
 
 function Card({ product }: { product: Product }) {
+    const stripRef = useRef<HTMLDivElement>(null);
+    const [idx, setIdx] = useState(0);
+    const multi = product.photos.length > 1;
+    const go = (e: React.MouseEvent, dir: number) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const el = stripRef.current;
+        if (el) el.scrollBy({ left: dir * el.clientWidth, behavior: 'smooth' });
+    };
+    const onStripScroll = () => {
+        const el = stripRef.current;
+        if (el) setIdx(Math.min(product.photos.length - 1, Math.round(el.scrollLeft / Math.max(1, el.clientWidth))));
+    };
+    // A real horizontal swipe cancels the click; a drag with the mouse should not open the product either.
+    const onStripClick = (e: React.MouseEvent) => {
+        const el = stripRef.current;
+        if (el && Math.abs(el.scrollLeft - idx * el.clientWidth) > 4) e.preventDefault();
+    };
     return (
         <a className="card" href={productPath(product)}>
-            <Photo ph={product.photos[0]} mode="cover" className="card-photo" lazy />
+            <div className="card-media">
+                <div className="card-swipe" ref={stripRef} onScroll={onStripScroll} onClickCapture={onStripClick}>
+                    {product.photos.map((ph, i) => (
+                        <div className="card-slide" key={`${ph.s}-${ph.x}-${ph.y}-${ph.src ?? ''}-${i}`}>
+                            <Photo ph={ph} mode="cover" className="card-photo" lazy />
+                        </div>
+                    ))}
+                </div>
+                {multi && <button type="button" className="card-nav card-prev" onClick={(e) => go(e, -1)} aria-label="Previous photo">&#8249;</button>}
+                {multi && <button type="button" className="card-nav card-next" onClick={(e) => go(e, 1)} aria-label="Next photo">&#8250;</button>}
+                {multi && <div className="card-dots" aria-hidden="true">{product.photos.map((_, i) => <span key={i} className={i === idx ? 'on' : ''} />)}</div>}
+            </div>
             <span className="card-cat">{product.category === 'Watch' ? 'Watches' : product.category === 'Sunglass' ? 'Sunglasses' : 'Accessories'}{product.gender === 'L' ? ' - Ladies' : product.gender === 'M' ? ' - Men' : ''}</span>
             <span className="card-name">{product.name}</span>
             <span className="card-price">{product.price}</span>
