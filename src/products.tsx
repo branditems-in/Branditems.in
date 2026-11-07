@@ -2008,7 +2008,7 @@ export const WHATSAPP_NUMBER = '917994800208';
 const waEncode = (s: string): string =>
     encodeURIComponent(s).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase()).replace(/%20/g, '+');
 
-export const SITE_URL = 'https://files.instinct.com/rvvv0v8v6cxl-branditems-in-homepage-model-a-grid';
+export const SITE_URL = 'https://branditems.in';
 export const WA_GENERAL_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${waEncode('Hi! I’m interested in your products. I found your website & would like to know more. -')}`;
 export const productAnchor = (product: Product): string => (product.source === 'wm' ? 'wm' : 'bi') + product.id;
 
