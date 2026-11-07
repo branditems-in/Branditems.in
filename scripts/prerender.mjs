@@ -40,6 +40,7 @@ for (const e of entries) {
         `<meta name="twitter:image" content="${img}"/>`;
     const html = template
         .replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
+        .replace(/<meta (?:property="og:[^"]*"|name="twitter:[^"]*")[^>]*\/>/g, '')
         .replace('</head>', meta + '</head>');
     const dir = join('dist', 'p', e.anchor);
     mkdirSync(dir, { recursive: true });
