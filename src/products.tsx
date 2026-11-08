@@ -201,7 +201,7 @@ export const products: Product[] = [
     qw(23032, "Casio World Time Illuminator - Unisex", "₹1,249", "21 Oct 2026",
         ["Square dial, world time","Digital timing, alarm, stopwatch","Day-date","Water resistant"], [["wm2/23032_0.webp",800,800],["wm2/23032_1.webp",800,800],["wm2/23032_2.webp",800,800],["wm2/23032_3.webp",800,800],["wm2/23032_4.webp",800,800],["wm2/23032_5.webp",800,800],["wm2/23032_6.webp",800,800],["wm2/23032_7.webp",800,800],["wm2/23032_8.webp",800,800],["wm2/23032_9.webp",800,800],["wm2/23032_10.webp",800,800],["wm2/23032_11.webp",800,800],["wm2/23032_12.webp",800,800]], "U"),
     qw(22999, "Casio G-Shock GM-2100 - Colour Options", "₹1,499", "21 Oct 2026",
-        ["Steel case","Fabric strap","Four dial colour options","For gents"], [["wm2/22999_0.webp",800,800],["wm2/22999_1.webp",800,800],["wm2/22999_2.webp",800,800],["wm2/22999_3.webp",800,800],["wm2/22999_4.webp",800,800],["wm2/22999_5.webp",800,800],["wm2/22999_6.webp",800,800]], "M"),
+        ["Steel case","Fabric strap","Multiple dial colour options","For gents"], [["wm2/22999_0.webp",800,800],["wm2/22999_1.webp",800,800],["wm2/22999_2.webp",800,800],["wm2/22999_3.webp",800,800],["wm2/22999_4.webp",800,800],["wm2/22999_5.webp",800,800],["wm2/22999_6.webp",800,800]], "M"),
     qw(22918, "Casio Full Metal Digital - Silver & Gold", "₹1,249", "20 Oct 2026",
         ["Digital display","Full metal bracelet","Premium quality"], [["wm2/22918_0.webp",600,800],["wm2/22918_1.webp",600,800],["wm2/22918_2.webp",600,800],["wm2/22918_3.webp",600,800]], "U"),
     qw(22901, "Casio Moon Phase MTP-M305D Analog", "₹1,599", "20 Oct 2026",
