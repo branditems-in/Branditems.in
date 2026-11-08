@@ -18,6 +18,9 @@ for (const m of SRC.matchAll(/p\((\d+), "((?:[^"\\]|\\.)*)", '(Watch|Sunglass|Ac
 for (const m of SRC.matchAll(/q\((\d+), "((?:[^"\\]|\\.)*)", "((?:[^"\\]|\\.)*)"/g)) {
     entries.push({ anchor: 'bi' + m[1], name: unescape(m[2]), cat: 'Sunglass', price: unescape(m[3]) });
 }
+for (const m of SRC.matchAll(/qw\((\d+), "((?:[^"\\]|\\.)*)", "((?:[^"\\]|\\.)*)"/g)) {
+    entries.push({ anchor: 'bi' + m[1], name: unescape(m[2]), cat: 'Watch', price: unescape(m[3]) });
+}
 
 const catLabel = (c) => (c === 'Watch' ? 'Watch' : c === 'Sunglass' ? 'Sunglasses' : 'Accessories');
 

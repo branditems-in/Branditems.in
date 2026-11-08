@@ -22,6 +22,12 @@ for m in re.finditer(r'q\((\d+), "((?:[^"\\]|\\.)*)", "((?:[^"\\]|\\.)*)"', SRC)
     ph = re.search(r'\[\["([^"]+)",(\d+),(\d+)\]', block)
     entries.append((pid, unescape(name), 'Sunglass', unescape(price), ('file', ph.group(1)) if ph else None))
 
+for m in re.finditer(r'qw\((\d+), "((?:[^"\\]|\\.)*)", "((?:[^"\\]|\\.)*)"', SRC):
+    pid, name, price = m.groups()
+    block = SRC[m.end():m.end()+2500]
+    ph = re.search(r'\[\["([^"]+)",(\d+),(\d+)\]', block)
+    entries.append((pid, unescape(name), 'Watch', unescape(price), ('file', ph.group(1)) if ph else None))
+
 made = skipped = failed = 0
 for pid, name, cat, price, photo in entries:
     out = f'{OUT}/bi{pid}.jpg'
