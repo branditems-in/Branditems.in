@@ -538,7 +538,7 @@ export const products: Product[] = [
         ["Details not listed in the post"], [[153,0,130,640,640]], 'wm', undefined),
     p(23744, "Casio Chronograph - Stainless Steel", 'Watch', "₹1,699", "4 Nov 2026",
         ["Details not listed in the post"], [[153,1299,50,601,800],[153,0,1030,640,640],[153,749,950,422,800],[153,1300,950,600,800]], 'wm', undefined),
-    p(23740, "Rado True Square automatic", 'Watch', "₹2,099", "4 Nov 2026",
+    p(23740, "Emporio Armani Quartz - Men's", 'Watch', "₹2,099", "4 Nov 2026",
         ["Details not listed in the post"], [[154,0,130,640,640],[154,640,130,640,640],[154,1280,130,640,640]], 'wm', undefined),
     p(23729, "Omega Chronograph", 'Watch', "₹2,149", "4 Nov 2026",
         ["Details not listed in the post"], [[154,660,950,600,800],[154,1300,950,600,800],[155,20,50,600,800],[155,660,50,600,800]], 'wm', undefined),
