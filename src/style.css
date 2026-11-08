@@ -108,7 +108,7 @@ body { background: var(--shop-page); }
 a.card { text-decoration: none; color: inherit; }
 
 .card-media { position: relative; }
-.card-swipe { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-y; border-radius: 3px 3px 0 0; }
+.card-swipe { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; border-radius: 3px 3px 0 0; }
 .card-swipe::-webkit-scrollbar { display: none; }
 .card-slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; }
 .card-slide .card-photo { border-radius: 0; }
