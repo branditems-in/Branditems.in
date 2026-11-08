@@ -23,7 +23,16 @@ function useImgRecovery(imgRef: React.RefObject<HTMLImageElement | null>): [numb
         const check = (el: HTMLImageElement) => {
             if (!el.complete) { later(() => check(el), 8000); return; }
             if (el.naturalWidth === 0) { retry(); return; }
-            if (el.decode) el.decode().catch(() => retry());
+            if (!el.dataset.repainted) {
+                // Some phones drop the decode silently: no error, decode() still
+                // resolves, but the tile stays grey. One same-URL re-assignment
+                // (instant from memory cache) forces a real re-decode + repaint.
+                el.dataset.repainted = '1';
+                if (el.decode) el.decode().catch(() => retry());
+                el.src = el.src;
+            } else if (el.decode) {
+                el.decode().catch(() => retry());
+            }
         };
         later(() => { if (!img.complete) retry(); }, 12000);
         let io: IntersectionObserver | null = null;
@@ -40,7 +49,7 @@ function useImgRecovery(imgRef: React.RefObject<HTMLImageElement | null>): [numb
 
 const SHEET_COUNT = 746;
 /** Full-resolution sprite sheets (1920px wide), used for the main product-page photo. */
-const SHEETS: string[] = Array.from({ length: SHEET_COUNT }, (_, i) => `sheets/sheet-${String(i).padStart(4, '0')}.webp`);
+export const SHEETS: string[] = Array.from({ length: SHEET_COUNT }, (_, i) => `sheets/sheet-${String(i).padStart(4, '0')}.webp`);
 /** Half-resolution copies (960px wide): grids and thumbnails decode with 4x less memory on phones. */
 const SHEETS_SM: string[] = Array.from({ length: SHEET_COUNT }, (_, i) => `sheets-sm/sheet-${String(i).padStart(4, '0')}.webp`);
 

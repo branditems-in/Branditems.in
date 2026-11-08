@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { waEnquiry, Photo, INSTAGRAM_URL, TELEGRAM_URL, WHATSAPP_CHANNEL_URL, FACEBOOK_URL, type Product } from './products';
+import React, { useEffect, useRef, useState } from 'react';
+import { waEnquiry, Photo, SHEETS, INSTAGRAM_URL, TELEGRAM_URL, WHATSAPP_CHANNEL_URL, FACEBOOK_URL, type Product } from './products';
 
 function productPath(p: Product): string {
     return `#/p=${p.source === 'wm' ? 'wm' : 'bi'}${p.id}`;
@@ -7,18 +7,45 @@ function productPath(p: Product): string {
 
 export function ProductPage({ product }: { product: Product }) {
     const [photo, setPhoto] = useState(0);
-    useEffect(() => { setPhoto(0); }, [product]);
+    const stripRef = useRef<HTMLDivElement>(null);
+    const scrollTimer = useRef<number | undefined>(undefined);
+    useEffect(() => { setPhoto(0); stripRef.current?.scrollTo({ left: 0 }); }, [product]);
     const multi = product.photos.length > 1;
+    // Preload the neighbours' full-resolution sheets so upgrading the active slide is instant.
+    useEffect(() => {
+        for (const i of [photo - 1, photo + 1]) {
+            const ph = product.photos[i];
+            if (ph && !ph.src) { const im = new Image(); im.src = SHEETS[ph.s]; }
+        }
+    }, [photo, product]);
+    const goTo = (i: number) => {
+        setPhoto(i);
+        const el = stripRef.current;
+        if (el) el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' });
+    };
+    const onStripScroll = () => {
+        window.clearTimeout(scrollTimer.current);
+        scrollTimer.current = window.setTimeout(() => {
+            const el = stripRef.current;
+            if (el) setPhoto(Math.min(product.photos.length - 1, Math.round(el.scrollLeft / Math.max(1, el.clientWidth))));
+        }, 90);
+    };
     return (
         <div className="pdp" key={product.id + product.source}>
             <a className="pdp-back" href="#/">← Back to the collection</a>
             <div className="pdp-grid">
                 <div className="pdp-gallery">
-                    <Photo key={`${product.id}-${photo}`} ph={product.photos[photo]} mode="contain" className="pdp-photo" full />
+                    <div className="pdp-swipe" ref={stripRef} onScroll={onStripScroll}>
+                        {product.photos.map((ph, i) => (
+                            <div className="pdp-slide" key={`${ph.s}-${ph.x}-${ph.y}-${ph.src ?? ''}-${i}`}>
+                                <Photo ph={ph} mode="contain" className="pdp-photo" full={i === photo} lazy={i > photo + 1} />
+                            </div>
+                        ))}
+                    </div>
                     {multi && (
                         <div className="pdp-thumbs">
                             {product.photos.map((ph, i) => (
-                                <button key={i} className={`pdp-thumb${i === photo ? ' is-active' : ''}`} onClick={() => setPhoto(i)} aria-label={`View photo ${i + 1}`}>
+                                <button key={i} className={`pdp-thumb${i === photo ? ' is-active' : ''}`} onClick={() => goTo(i)} aria-label={`View photo ${i + 1}`}>
                                     <Photo ph={ph} mode="cover" className="pdp-thumb-sprite" lazy />
                                 </button>
                             ))}
