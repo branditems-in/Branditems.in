@@ -61,7 +61,7 @@ function WhatsAppChannelBanner() {
     const [visible, setVisible] = useState(() => {
         if (typeof window === 'undefined') return false;
         try {
-            return window.localStorage.getItem(CHANNEL_BANNER_DISMISSED_KEY) !== '1';
+            return window.sessionStorage.getItem(CHANNEL_BANNER_DISMISSED_KEY) !== '1';
         } catch {
             return true;
         }
@@ -69,7 +69,7 @@ function WhatsAppChannelBanner() {
 
     const dismiss = () => {
         try {
-            window.localStorage.setItem(CHANNEL_BANNER_DISMISSED_KEY, '1');
+            window.sessionStorage.setItem(CHANNEL_BANNER_DISMISSED_KEY, '1');
         } catch {
             // Keep the banner dismissible if browser storage is unavailable.
         }
