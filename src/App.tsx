@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { products, productFromAnchor, INSTAGRAM_URL, TELEGRAM_URL, WA_GENERAL_URL, Photo, type Product } from './products';
+import { products, productFromAnchor, INSTAGRAM_URL, TELEGRAM_URL, WA_GENERAL_URL, WHATSAPP_CHANNEL_URL, Photo, type Product } from './products';
 import { ProductPage, productPath } from './ProductPage';
 
 function WhatsAppIcon() {
@@ -55,6 +55,37 @@ type WatchSub = 'ALL' | 'L' | 'M';
 const COLLECTIONS: [Cat, string][] = [['All', 'ALL MODELS'], ['Watch', 'WATCHES'], ['Sunglass', 'SUNGLASSES'], ['Accessories', 'ACCESSORIES']];
 const WATCH_SUBS: [WatchSub, string][] = [['ALL', 'ALL WATCHES'], ['L', 'LADIES'], ['M', 'MEN']];
 
+const CHANNEL_BANNER_DISMISSED_KEY = 'branditems-wa-channel-banner-dismissed';
+
+function WhatsAppChannelBanner() {
+    const [visible, setVisible] = useState(() => {
+        if (typeof window === 'undefined') return false;
+        try {
+            return window.localStorage.getItem(CHANNEL_BANNER_DISMISSED_KEY) !== '1';
+        } catch {
+            return true;
+        }
+    });
+
+    const dismiss = () => {
+        try {
+            window.localStorage.setItem(CHANNEL_BANNER_DISMISSED_KEY, '1');
+        } catch {
+            // Keep the banner dismissible if browser storage is unavailable.
+        }
+        setVisible(false);
+    };
+
+    if (!visible) return null;
+    return (
+        <aside className="wa-channel-banner" aria-label="Join our WhatsApp Channel">
+            <p>Join our WhatsApp Channel</p>
+            <a className="wa-channel-join" href={WHATSAPP_CHANNEL_URL} target="_blank" rel="noreferrer">Join</a>
+            <button className="wa-channel-close" type="button" onClick={dismiss} aria-label="Dismiss WhatsApp channel banner">×</button>
+        </aside>
+    );
+}
+
 export function App() {
     const [cat, setCat] = useState<Cat>('All');
     const [sub, setSub] = useState<WatchSub>('ALL');
@@ -86,6 +117,7 @@ export function App() {
         (!query || p.name.toLowerCase().includes(query.toLowerCase()))
     ), [cat, sub, query]);
     return (
+        <>
         <main className="catalogue">
             <div className="shop">
                 <div className="topbar">
@@ -120,5 +152,7 @@ export function App() {
                 </footer>
             </div>
         </main>
+        <WhatsAppChannelBanner />
+        </>
     );
 }
