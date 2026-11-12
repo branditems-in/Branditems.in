@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { products, INSTAGRAM_URL, TELEGRAM_URL, WA_GENERAL_URL, Photo, type Product } from './products';
+import { products, productFromAnchor, INSTAGRAM_URL, TELEGRAM_URL, WA_GENERAL_URL, Photo, type Product } from './products';
 import { ProductPage, productPath } from './ProductPage';
 
 function WhatsAppIcon() {
@@ -69,7 +69,7 @@ export function App() {
                 requestAnimationFrame(() => window.scrollTo(0, scrollY.current));
                 return;
             }
-            const p = products.find((x) => x.id === Number(m[2]) && (x.source === 'wm') === (m[1] === 'wm'));
+            const p = productFromAnchor(m[1] + m[2]);
             setOpen((prev) => {
                 if (!prev) scrollY.current = window.scrollY;
                 requestAnimationFrame(() => window.scrollTo(0, 0));

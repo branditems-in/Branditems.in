@@ -2114,6 +2114,15 @@ export const SITE_URL = 'https://branditems.in';
 export const WA_GENERAL_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${waEncode('Hi! I’m interested in your products. I found your website & would like to know more. -')}`;
 export const productAnchor = (product: Product): string => (product.source === 'wm' ? 'wm' : 'bi') + product.id;
 
+// Every original published URL used bi, including Watch Mart products.
+// Keep those links working while new source-aware wm URLs are canonical.
+export const productFromAnchor = (anchor: string): Product | undefined => {
+    const match = /^(bi|wm)(\d+)$/.exec(anchor);
+    if (!match) return undefined;
+    return products.find((product) => product.id === Number(match[2]) &&
+        (match[1] === 'bi' || product.source === 'wm'));
+};
+
 export const waEnquiry = (product: Product): string => {
     const msg = `${product.name}
 Price: ${product.price}
