@@ -125,9 +125,11 @@ a.card { text-decoration: none; color: inherit; }
 @media (hover: none) { .card-nav { display: none; } }
 
 
-.wa-channel-banner { position:fixed; z-index:100; left:50%; bottom:20px; transform:translateX(-50%); display:flex; align-items:center; justify-content:space-between; gap:20px; width:min(460px, calc(100vw - 32px)); padding:14px 58px 14px 18px; border:1px solid var(--shop-ink); border-radius:5px; background:var(--shop-white); color:var(--shop-ink); box-shadow:0 8px 28px rgba(0,0,0,.16); }
-.wa-channel-banner p { margin:0; font-size:14px; font-weight:600; line-height:1.4; }
-.wa-channel-join { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:0 18px; border:1px solid var(--shop-ink); border-radius:3px; background:var(--shop-ink); color:var(--shop-white); font-size:12px; font-weight:600; letter-spacing:.08em; text-decoration:none; text-transform:uppercase; white-space:nowrap; }
-.wa-channel-join:hover { background:var(--shop-white); color:var(--shop-ink); }
-.wa-channel-close { position:absolute; top:5px; right:5px; display:flex; align-items:center; justify-content:center; width:40px; height:40px; padding:0; border:0; background:transparent; color:var(--shop-ink-2); font-size:24px; line-height:1; cursor:pointer; }
-@media(max-width:480px) { .wa-channel-banner { bottom:max(12px, env(safe-area-inset-bottom)); gap:12px; width:calc(100vw - 24px); padding:12px 52px 12px 14px; } .wa-channel-banner p { font-size:13px; } .wa-channel-join { min-height:38px; padding:0 13px; } }
+.wa-channel-banner { position:fixed; z-index:100; left:50%; bottom:20px; transform:translateX(-50%); display:flex; align-items:center; justify-content:space-between; gap:14px; width:min(460px, calc(100vw - 32px)); padding:14px 58px 14px 18px; border:1px solid #25d366; border-radius:8px; background:#e9f7ef; color:#14251a; box-shadow:0 8px 28px rgba(0,0,0,.16); }
+.wa-channel-icon { flex:0 0 38px; display:flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; background:#25d366; color:#fff; }
+.wa-channel-icon svg { width:21px; height:21px; }
+.wa-channel-banner p { flex:1; margin:0; font-size:14px; font-weight:600; line-height:1.4; }
+.wa-channel-join { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:0 18px; border:1px solid #25d366; border-radius:5px; background:#25d366; color:#fff; font-size:12px; font-weight:700; letter-spacing:.08em; text-decoration:none; text-transform:uppercase; white-space:nowrap; transition:background .15s, border-color .15s; }
+.wa-channel-join:hover { border-color:#128c7e; background:#128c7e; color:#fff; }
+.wa-channel-close { position:absolute; top:5px; right:5px; display:flex; align-items:center; justify-content:center; width:40px; height:40px; padding:0; border:0; background:transparent; color:#315c42; font-size:24px; line-height:1; cursor:pointer; }
+@media(max-width:480px) { .wa-channel-banner { bottom:max(12px, env(safe-area-inset-bottom)); gap:10px; width:calc(100vw - 24px); padding:12px 52px 12px 12px; } .wa-channel-icon { flex-basis:34px; width:34px; height:34px; } .wa-channel-banner p { font-size:13px; } .wa-channel-join { min-height:38px; padding:0 13px; } }

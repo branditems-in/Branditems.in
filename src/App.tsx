@@ -79,6 +79,7 @@ function WhatsAppChannelBanner() {
     if (!visible) return null;
     return (
         <aside className="wa-channel-banner" aria-label="Join our WhatsApp Channel">
+            <span className="wa-channel-icon" aria-hidden="true"><WhatsAppIcon /></span>
             <p>Join our WhatsApp Channel</p>
             <a className="wa-channel-join" href={WHATSAPP_CHANNEL_URL} target="_blank" rel="noreferrer">Join</a>
             <button className="wa-channel-close" type="button" onClick={dismiss} aria-label="Dismiss WhatsApp channel banner">×</button>
